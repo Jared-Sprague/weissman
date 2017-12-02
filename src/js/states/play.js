@@ -11,16 +11,17 @@ class PlayState extends Phaser.State {
         window.play = this;
         this.between = this.game.rnd.between.bind(this.game.rnd);
 
+        this.sprites = {};
+        this.tweens = {};
+
         this.drawScene();
 
-        this.zoomAlgWindow();
+        this.addKeyListener();
 
-        this.tweens = {};
+        this.zoomAlgWindow();
     }
 
     drawScene() {
-        this.sprites = {};
-
         // draw user sprite
         this.sprites.user = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'user');
 
@@ -35,6 +36,45 @@ class PlayState extends Phaser.State {
         this.sprites.algorithm.scale.set(0.1, 0.3);
     }
 
+    addKeyListener() {
+        let keyListener = this.typing.bind(this);
+        window.addEventListener('keydown', keyListener, false);
+    }
+
+    typing(e) {
+        let char = String.fromCharCode(e.which).toLowerCase();
+        console.log('char', char);
+
+        // See if the active word contains one of the letters
+        for (let i = 0; i < this.word.children.length; i++) {
+            let letter = this.word.children[i];
+            let xPositionOffset = ((i + 1) * 50) - 25;
+
+            let letterSprite = letter.children[1];
+            if (char === letterSprite.key && !letterSprite.data.compressed) {
+                console.log('matched!', char);
+
+                this.game.add.tween(letter)
+                    .to({width: 0, height: 0},
+                        100,
+                        Phaser.Easing.Linear.None,
+                        true
+                    );
+
+                this.game.add.tween(letter)
+                    .to({x: xPositionOffset, y: 25},
+                        100,
+                        Phaser.Easing.Linear.None,
+                        true
+                    );
+
+                letterSprite.data.compressed = true;
+                break;
+            }
+        }
+
+    }
+
     zoomAlgWindow() {
 
         this.tweens.zoomAlg = this.game.add.tween(this.sprites.algorithm.scale)
@@ -43,6 +83,9 @@ class PlayState extends Phaser.State {
                 Phaser.Easing.Linear.None,
                 true
             );
+        this.tweens.zoomAlg.onComplete.add(() => {
+            this.drawWord('hello');
+        }, );
 
         this.tweens.zoomPosAlg = this.game.add.tween(this.sprites.algorithm.position)
             .to({x: 150, y: config.CANVAS_HEIGHT / 2 - 200},
@@ -52,4 +95,22 @@ class PlayState extends Phaser.State {
             );
     }
 
+    drawWord(str) {
+        this.word   = this.game.add.group();
+        this.word.x = 175;
+        this.word.y = config.CANVAS_HEIGHT / 2 - 175;
+
+        for (let i = 0; i < str.length; i++) {
+            let xOffset = i * 50;
+            let letter = new Letter(str[i], xOffset, 0, 0xff0000, this.game);
+            this.word.add(letter.group);
+        }
+
+        this.game.add.tween(this.word)
+            .to({x: 950},
+                2000,
+                Phaser.Easing.Linear.None,
+                true
+            );
+    }
 }
