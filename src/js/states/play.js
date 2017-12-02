@@ -43,12 +43,12 @@ class PlayState extends Phaser.State {
 
     typing(e) {
         let char = String.fromCharCode(e.which).toLowerCase();
-        console.log('char', char);
+        console.log('char [' + char + ']');
 
         // See if the active word contains one of the letters
         for (let i = 0; i < this.word.children.length; i++) {
             let letter = this.word.children[i];
-            let xPositionOffset = ((i + 1) * 50) - 25;
+            let xPositionOffset = ((i + 1) * config.LETTER_BLOCK_WIDTH) - config.LETTER_BLOCK_WIDTH / 2;
 
             let letterSprite = letter.children[1];
             if (char === letterSprite.key && !letterSprite.data.compressed) {
@@ -62,7 +62,7 @@ class PlayState extends Phaser.State {
                     );
 
                 this.game.add.tween(letter)
-                    .to({x: xPositionOffset, y: 25},
+                    .to({x: xPositionOffset, y: config.LETTER_BLOCK_HEIGHT / 2},
                         100,
                         Phaser.Easing.Linear.None,
                         true
@@ -84,7 +84,7 @@ class PlayState extends Phaser.State {
                 true
             );
         this.tweens.zoomAlg.onComplete.add(() => {
-            this.drawWord('hello');
+            this.drawWord('ludum dare');
         }, );
 
         this.tweens.zoomPosAlg = this.game.add.tween(this.sprites.algorithm.position)
@@ -101,14 +101,23 @@ class PlayState extends Phaser.State {
         this.word.y = config.CANVAS_HEIGHT / 2 - 175;
 
         for (let i = 0; i < str.length; i++) {
-            let xOffset = i * 50;
-            let letter = new Letter(str[i], xOffset, 0, 0xff0000, this.game);
+            let xOffset = i * config.LETTER_BLOCK_WIDTH;
+
+            let tint = 0x384088;
+            if (this.between(1, 3) < 3) {
+                // TODO: if there are multiple of the same letter color all of them the same
+                tint = 0xff0000;
+            }
+
+            let letter = new Letter(str[i], xOffset, 0, tint, this.game);
             this.word.add(letter.group);
         }
 
+        let pixelLength = this.word.children.length * config.LETTER_BLOCK_WIDTH;
+
         this.game.add.tween(this.word)
-            .to({x: 950},
-                2000,
+            .to({x: 1125 - pixelLength},
+                3000,
                 Phaser.Easing.Linear.None,
                 true
             );

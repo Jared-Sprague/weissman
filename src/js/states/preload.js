@@ -45,6 +45,7 @@ class PreloadState extends Phaser.State {
         this.game.load.image('x', 'images/letters/x.png');
         this.game.load.image('y', 'images/letters/y.png');
         this.game.load.image('z', 'images/letters/z.png');
+        this.game.load.image(' ', 'images/letters/space.png');
 
 
 
