@@ -4,10 +4,9 @@ class Game extends Phaser.Game {
             config.CANVAS_WIDTH,
             config.CANVAS_HEIGHT,
             Phaser.AUTO,
-            'phaser-engage',
-            null,
+            'game-canvas',
             false,
-            false
+            false,
         );
 
         this.state.add('BootState'      , BootState      , false);
@@ -15,8 +14,6 @@ class Game extends Phaser.Game {
         this.state.add('MenuState'      , MenuState      , false);
         this.state.add('PlayState'      , PlayState      , false);
         this.state.add('ScoreState'     , ScoreState     , false);
-
-        this.forceSingleUpdate = false; // decouple physics from framerate
 
         this.state.start('BootState');
     }

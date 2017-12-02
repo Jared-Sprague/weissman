@@ -5,7 +5,6 @@ class BootState extends Phaser.State {
 
     create() {
         console.log('[boot] booting');
-        this.state.start('PreloadState');
 
         // resize the canvas to fit the screen
         this.game.scale.maxWidth = config.CANVAS_WIDTH;
@@ -15,7 +14,7 @@ class BootState extends Phaser.State {
 
         // Phaser will automatically pause if the browser tab the game is in
         // loses focus. You can disable that here:
-        this.stage.disableVisibilityChange = true;
+        // this.stage.disableVisibilityChange = true;
 
         // Initialize the state transition library
         this.game.stateTransition = this.game.plugins.add(Phaser.Plugin.StateTransition);
@@ -27,6 +26,8 @@ class BootState extends Phaser.State {
                 alpha: 0,
             },
         });
+
+        this.state.start('PreloadState');
     }
 
     updateCanvasSize() {
