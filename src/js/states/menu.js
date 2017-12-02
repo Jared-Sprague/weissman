@@ -20,20 +20,20 @@ class MenuState extends Phaser.State {
 
 
         // Play button
-        // const btnHum = this.game.add.button(
-        //     this.game.world.centerX,
-        //     this.game.world.height - 130,
-        //     'btn-play',
-        //     this.next,
-        //     this,
-        //     1, // over
-        //     0, // out
-        //     2  // down
-        // );
-        // btnHum.anchor.set(0.5, 1);
-        // btnHum.onDownSound = this.game.add.audio('ButtonTap');
-        // btnHum.onOverSound = this.game.add.audio('Barrier');
-        // btnHum.input.useHandCursor = false;
+        const playBtn = this.game.add.button(
+            this.game.world.centerX,
+            this.game.world.height - 130,
+            'btn-play',
+            this.next,
+            this,
+            1, // over
+            0, // out
+            2  // down
+        );
+        playBtn.anchor.set(0.5, 1);
+        // playBtn.onDownSound = this.game.add.audio('ButtonTap');
+        // playBtn.onOverSound = this.game.add.audio('Barrier');
+        playBtn.input.useHandCursor = false;
 
 
         if (config.SKIP_MENU) {
@@ -55,7 +55,7 @@ class MenuState extends Phaser.State {
     }
 
     shutdown() {
-        this.music.stop();
+        // this.music.stop();
     }
 
     // drawBarrierHelp() {
