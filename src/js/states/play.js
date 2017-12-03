@@ -18,8 +18,8 @@ class PlayState extends Phaser.State {
 
         this.overallScore = this.initScore();
 
-        // this.phraseStr = 'it is a long established fact that a reader';
-        this.phraseStr = 'abcde';
+        this.phraseStr = 'it is a long established fact that a reader';
+        // this.phraseStr = 'abcde';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
         this.createSounds();
@@ -123,6 +123,8 @@ class PlayState extends Phaser.State {
 
                 if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.lossed) {
                     console.log('matched compressed!', char);
+
+                    this.sounds.lost.play();
 
                     // Draw the red 'x' sprite over the character
                     letter.create(0, 0, 'lost');
@@ -325,8 +327,10 @@ class PlayState extends Phaser.State {
     createSounds() {
         this.sounds = {
             compress: this.game.add.audio('compress'),
+            lost: this.game.add.audio('lost'),
         };
 
         this.sounds.compress.allowMultiple = true;
+        this.sounds.lost.allowMultiple = true;
     }
 }
