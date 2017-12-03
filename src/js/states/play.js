@@ -102,7 +102,9 @@ class PlayState extends Phaser.State {
                         true
                     );
                 shrinkTween.onComplete.add(() => {
-                   letter.children[0].tint = config.COMPRESSED_TINT;
+                    if (letter && letter.children[0]) {
+                        letter.children[0].tint = config.COMPRESSED_TINT;
+                    }
                 });
                 this.game.add.tween(letter.position)
                     .to({
