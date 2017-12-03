@@ -18,7 +18,7 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        this.drawWord('ludum dare is so much fun');
+        this.beginPhrase('ludum dare');
     }
 
     drawScene() {
@@ -65,8 +65,8 @@ class PlayState extends Phaser.State {
         console.log('char [' + char + ']');
 
         // See if the active word contains one of the letters
-        for (let i = 0; i < this.word.children.length; i++) {
-            let letter = this.word.children[i];
+        for (let i = 0; i < this.phrase.children.length; i++) {
+            let letter = this.phrase.children[i];
             let xPositionOffset = ((i + 1) * config.LETTER_BLOCK_WIDTH) - config.LETTER_BLOCK_WIDTH / 2;
 
             let letterSprite = letter.children[1];
@@ -94,14 +94,36 @@ class PlayState extends Phaser.State {
 
     }
 
+    update() {
+        let i = this.phrase.children.length;
 
-    drawWord(str) {
-        this.word   = this.game.add.group();
-        this.word.x = config.ALG_BAR_WIDTH + 100;
-        this.word.y = config.LETTER_BLOCK_HEIGHT / 2;
+        while(i--) {
+            let letter = this.phrase.children[i];
+            let char = letter.children[1].key;
+
+            letter.x -= 2;
+
+            if (letter.x < -config.LETTER_BLOCK_WIDTH) {
+                // letter block is off the screen lets record it
+
+                if (i === this.phrase.children.length - 1) {
+                    // the is the last block off screen, lets destroy this phrase
+                    console.log('[play] last letter off screen', char);
+                    console.log('[play] destroying phrase');
+                    this.phrase.destroy();
+                    break;
+                }
+            }
+        }
+    }
+
+    beginPhrase(str) {
+        this.phrase   = this.game.add.group();
+        this.phrase.x = 0;
+        this.phrase.y = config.LETTER_BLOCK_HEIGHT / 2;
 
         for (let i = 0; i < str.length; i++) {
-            let xOffset = i * config.LETTER_BLOCK_WIDTH;
+            let xOffset = config.ALG_BAR_WIDTH + (i * config.LETTER_BLOCK_WIDTH);
 
             let tint = 0x384088;
             if (this.between(1, 3) < 3) {
@@ -110,16 +132,9 @@ class PlayState extends Phaser.State {
             }
 
             let letter = new Letter(str[i], xOffset, 0, tint, this.game);
-            this.word.add(letter.group);
+            this.phrase.add(letter.group);
         }
 
-        this.algBarGroup.add(this.word);
-
-        this.game.add.tween(this.word)
-            .to({x: -3000},
-                15000,
-                Phaser.Easing.Linear.None,
-                true
-            );
+        this.algBarGroup.add(this.phrase);
     }
 }

@@ -15,14 +15,17 @@ class Letter {
         this.bgTint = bgTint;
         this.game = game;
 
-        this.bgSprite = this.game.add.sprite(x, y, 'letter-bg');
+        this.bgSprite = this.game.add.sprite(0, 0, 'letter-bg');
         this.bgSprite.tint = bgTint;
 
-        this.letterSprite = this.game.add.sprite(x, y, letter);
+        this.letterSprite = this.game.add.sprite(0, 0, letter);
 
         this.group = this.game.add.group();
 
         this.group.add(this.bgSprite);
         this.group.add(this.letterSprite);
+
+        this.group.x = x;
+        this.group.y = y;
     }
 }
