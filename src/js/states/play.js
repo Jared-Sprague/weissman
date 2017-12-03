@@ -18,8 +18,8 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        // let str = 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout';
-        let str = 'abcde';
+        let str = 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout';
+        // let str = 'abcde';
         this.beginPhrase(str.toLowerCase());
 
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
@@ -68,13 +68,14 @@ class PlayState extends Phaser.State {
         let char = String.fromCharCode(e.which).toLowerCase();
         console.log('char [' + char + ']');
 
-        // See if the active word contains one of the letters
-        for (let i = 0; i < this.phrase.children.length; i++) {
-            let letter = this.phrase.children[i];
-            let xPositionOffset = ((i + 1) * config.LETTER_BLOCK_WIDTH) - config.LETTER_BLOCK_WIDTH / 2;
+        let foundMatch = false;
 
+        // See if there are any visible uncompressed letters
+        for (let i = 0; i < this.uncompressedLetters.length; i++) {
+            let letter       = this.uncompressedLetters[i];
             let letterSprite = letter.children[1];
-            if (char === letterSprite.key && !letterSprite.data.compressed && this.isLetterVisible(letter)) {
+
+            if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.compressed) {
                 console.log('matched!', char);
 
                 // Shrink the letter out if it is a red letter
@@ -96,7 +97,26 @@ class PlayState extends Phaser.State {
                     );
 
                 letterSprite.data.compressed = true;
+                foundMatch = true;
                 break;
+            }
+        }
+
+        // If no matches found see if there are any matching compressed characters to corrupt
+        if (!foundMatch) {
+            for (let i = 0; i < this.compressedLetters.length; i++) {
+                let letter       = this.compressedLetters[i];
+                let letterSprite = letter.children[1];
+
+                if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.lossed) {
+                    console.log('matched compressed!', char);
+
+                    // Change tint to lost
+                    letter.children[0].tint = config.LOST_TINT;
+
+                    letterSprite.data.lossed = true;
+                    break;
+                }
             }
         }
     }
@@ -123,6 +143,8 @@ class PlayState extends Phaser.State {
                     console.log('[play] last letter off screen', char);
                     console.log('[play] destroying phrase');
                     this.phrase.destroy();
+                    delete this.uncompressedLetters;
+                    delete this.compressedLetters;
                     break;
                 }
             }
@@ -133,16 +155,22 @@ class PlayState extends Phaser.State {
         this.phrase   = this.game.add.group();
         this.phrase.x = 0;
         this.phrase.y = config.LETTER_BLOCK_HEIGHT / 2;
+        let letter = null;
+        this.uncompressedLetters = [];
+        this.compressedLetters = [];
 
         for (let i = 0; i < str.length; i++) {
             let xOffset = config.ALG_BAR_WIDTH + (i * config.LETTER_BLOCK_WIDTH);
 
-            let tint = 0x384088;
             if (this.between(1, 3) < 3) {
-                tint = 0xff0000;
+                letter = new Letter(str[i], xOffset, 0, config.UNCOMPRESSED_TINT, this.game);
+                this.uncompressedLetters.push(letter.group);
+            }
+            else {
+                letter = new Letter(str[i], xOffset, 0, config.COMPRESSED_TINT, this.game);
+                this.compressedLetters.push(letter.group);
             }
 
-            let letter = new Letter(str[i], xOffset, 0, tint, this.game);
             this.phrase.add(letter.group);
         }
 
