@@ -19,6 +19,8 @@ class PlayState extends Phaser.State {
         this.addKeyListener();
 
         this.beginPhrase('ludum dare');
+
+        this.phraseSpeed = 2;
     }
 
     drawScene() {
@@ -73,15 +75,19 @@ class PlayState extends Phaser.State {
             if (char === letterSprite.key && !letterSprite.data.compressed) {
                 console.log('matched!', char);
 
+                // Shrink the letter out if it is a red letter
+                let letterPos = letter.position;
                 this.game.add.tween(letter)
                     .to({width: 0, height: 0},
                         100,
                         Phaser.Easing.Linear.None,
                         true
                     );
-
-                this.game.add.tween(letter)
-                    .to({x: xPositionOffset, y: config.LETTER_BLOCK_HEIGHT / 2},
+                this.game.add.tween(letter.position)
+                    .to({
+                            x: letterPos.x + (config.LETTER_BLOCK_WIDTH / 2) - this.phraseSpeed * 3,
+                            y: letterPos.y + (config.LETTER_BLOCK_HEIGHT / 2),
+                        },
                         100,
                         Phaser.Easing.Linear.None,
                         true
@@ -101,7 +107,7 @@ class PlayState extends Phaser.State {
             let letter = this.phrase.children[i];
             let char = letter.children[1].key;
 
-            letter.x -= 2;
+            letter.x -= this.phraseSpeed;
 
             if (letter.x < -config.LETTER_BLOCK_WIDTH) {
                 // letter block is off the screen lets record it
@@ -127,7 +133,6 @@ class PlayState extends Phaser.State {
 
             let tint = 0x384088;
             if (this.between(1, 3) < 3) {
-                // TODO: if there are multiple of the same letter color all of them the same
                 tint = 0xff0000;
             }
 
