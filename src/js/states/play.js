@@ -18,23 +18,23 @@ class PlayState extends Phaser.State {
 
         this.overallScore = this.initScore();
 
+        // this.phraseStr = 'it is a long established fact that a reader';
+        this.phraseStr = 'abcde';
+        this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
+
         this.drawScene();
 
         this.addKeyListener();
 
-        // this.phraseStr = 'it is a long established fact that a reader';
-        this.phraseStr = 'abcde';
-        this.beginPhrase(this.phraseStr);
-
-        this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
+        this.drawIncomingFile('file');
     }
 
     drawScene() {
         // draw user sprite
-        this.sprites.user = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'server');
+        this.sprites.server = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'server');
 
         // draw server sprite
-        this.sprites.server = this.game.add.sprite(20, config.CANVAS_HEIGHT / 2 - 100, 'user');
+        this.sprites.user = this.game.add.sprite(20, config.CANVAS_HEIGHT / 2 - 100, 'user');
 
         // draw algorithm bar
         this.sprites.algBarSprite = this.game.add.sprite(150, config.CANVAS_HEIGHT / 2, 'algorithm');
@@ -141,6 +141,8 @@ class PlayState extends Phaser.State {
     }
 
     update() {
+        if (!this.phrase || this.phrase.children.length === 0) return;
+
         let i = this.phrase.children.length;
 
         while(i--) {
@@ -181,7 +183,7 @@ class PlayState extends Phaser.State {
 
                         // schedule next phrase
                         this.game.time.events.add(2000, () => {
-                            this.beginPhrase(this.phraseStr);
+                            this.drawIncomingFile('file');
                         });
                     }
                     else {
@@ -250,5 +252,31 @@ class PlayState extends Phaser.State {
 
         //  We'll set the bounds to be from x0, y100 and be 800px wide by 100px high
         this.text.fileProgress.setTextBounds(0, 200, config.CANVAS_WIDTH, 80);
+    }
+
+    drawIncomingFile(key) {
+        let startPosition = this.sprites.user.position;
+        let endPosition   = this.sprites.server.position;
+        let fileSprite    = this.game.add.sprite(startPosition.x, startPosition.y, key);
+        let time          = 3000;
+        let arcPeakY      = 10;
+
+        // tween the object from left to right in a linear fashion
+        this.game.add.tween(fileSprite.position)
+            .to({x: endPosition.x},
+                time,
+                Phaser.Easing.Linear.None,
+                true
+            );
+
+        // chain tween the object up to the Y value with a sinusoidal ease out, then back down with an ease in
+        let fileTween = this.game.add.tween(fileSprite.position)
+            .to({y: arcPeakY}, time * 0.5, Phaser.Easing.Sinusoidal.Out)
+            .to({y: endPosition.y}, time * 0.5, Phaser.Easing.Sinusoidal.In)
+            .start();
+
+        fileTween.onComplete.add(() => {
+            this.beginPhrase(this.phraseStr);
+        }, this)
     }
 }
