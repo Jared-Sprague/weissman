@@ -18,8 +18,8 @@ class PlayState extends Phaser.State {
 
         this.overallScore = this.initScore();
 
-        this.phraseStr = 'it is a long established fact that a reader';
-        // this.phraseStr = 'abcde';
+        // this.phraseStr = 'it is a long established fact that a reader';
+        this.phraseStr = 'abcde';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
         this.createSounds();
@@ -176,6 +176,8 @@ class PlayState extends Phaser.State {
                     this.compressedLetters = [];
                     this.phrase.destroy();
 
+                    this.sounds.typingSong.fadeOut(500);
+
                     // handle end phase, perform user reaction and save score
                     this.handleEndStage();
 
@@ -214,6 +216,8 @@ class PlayState extends Phaser.State {
         }
 
         this.algBarGroup.add(this.phrase);
+
+        this.sounds.typingSong.play();
     }
 
     initScore() {
@@ -328,9 +332,16 @@ class PlayState extends Phaser.State {
         this.sounds = {
             compress: this.game.add.audio('compress'),
             lost: this.game.add.audio('lost'),
+            typingSong: this.game.add.audio('typingSong'),
         };
 
         this.sounds.compress.allowMultiple = true;
         this.sounds.lost.allowMultiple = true;
+
+        this.sounds.typingSong.onFadeComplete.add(() => {
+            console.log('[play] Stopping typing song');
+            this.sounds.typingSong.stop();
+            this.sounds.typingSong.volume = 1;
+        });
     }
 }

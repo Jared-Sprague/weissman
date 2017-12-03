@@ -59,6 +59,7 @@ class PreloadState extends Phaser.State {
 
         this.game.load.audio('compress', 'sounds/fx/compress.wav');
         this.game.load.audio('lost', 'sounds/fx/lost.wav');
+        this.game.load.audio('typingSong', 'sounds/songs/typing.mp3');
 
     }
 
