@@ -12,7 +12,9 @@ class PlayState extends Phaser.State {
         this.between = this.game.rnd.between.bind(this.game.rnd);
 
         this.sprites = {};
-        this.tweens = {};
+        this.text = {};
+
+        this.currentStage = 1;
 
         this.overallScore = this.initScore();
 
@@ -20,8 +22,8 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        this.phraseStr = 'it is a long established fact that a reader';
-        // this.phraseStr = 'abcde';
+        // this.phraseStr = 'it is a long established fact that a reader';
+        this.phraseStr = 'abcde';
         this.beginPhrase(this.phraseStr);
 
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
@@ -44,6 +46,8 @@ class PlayState extends Phaser.State {
 
         // mask on the edges
         this.drawAlgMask();
+
+        this.drawFileProgressText();
 
     }
 
@@ -170,10 +174,20 @@ class PlayState extends Phaser.State {
                     console.log('score', this.phraseScore);
                     this.addOverallScore(this.phraseScore);
 
-                    // schedule next phrase
-                    this.game.time.events.add(2000, () => {
-                        this.beginPhrase(this.phraseStr);
-                    });
+                    if (this.currentStage < config.NUM_STAGES) {
+                        // Advance to next stage
+                        this.currentStage++;
+                        this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
+
+                        // schedule next phrase
+                        this.game.time.events.add(2000, () => {
+                            this.beginPhrase(this.phraseStr);
+                        });
+                    }
+                    else {
+                        // Handle game complete and go to score state
+                        console.log('[play] Game Complete!');
+                    }
 
                     break;
                 }
@@ -226,5 +240,15 @@ class PlayState extends Phaser.State {
         this.overallScore.totalUncompressed += score.totalUncompressed;
         this.overallScore.totalLost += score.totalLost;
         this.overallScore.numChars += score.numChars;
+    }
+
+    drawFileProgressText() {
+        let style = { font: "bold 40px Monospace", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+
+        //  The Text is positioned at 0, 100
+        this.text.fileProgress = this.game.add.text(0, 0, `File ${this.currentStage} of ${config.NUM_STAGES}`, style);
+
+        //  We'll set the bounds to be from x0, y100 and be 800px wide by 100px high
+        this.text.fileProgress.setTextBounds(0, 200, config.CANVAS_WIDTH, 80);
     }
 }
