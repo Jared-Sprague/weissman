@@ -10,4 +10,6 @@ const config = Object.freeze({
     ALG_BAR_WIDTH: 900,
     ALG_BAR_HEIGHT: 100,
 
+    INITIAL_PHRASE_SPEED: 2,
+
 });

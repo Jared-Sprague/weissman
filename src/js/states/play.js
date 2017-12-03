@@ -18,9 +18,11 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        this.beginPhrase('ludum dare');
+        // let str = 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout';
+        let str = 'abcde';
+        this.beginPhrase(str.toLowerCase());
 
-        this.phraseSpeed = 2;
+        this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
     }
 
     drawScene() {
@@ -72,7 +74,7 @@ class PlayState extends Phaser.State {
             let xPositionOffset = ((i + 1) * config.LETTER_BLOCK_WIDTH) - config.LETTER_BLOCK_WIDTH / 2;
 
             let letterSprite = letter.children[1];
-            if (char === letterSprite.key && !letterSprite.data.compressed) {
+            if (char === letterSprite.key && !letterSprite.data.compressed && this.isLetterVisible(letter)) {
                 console.log('matched!', char);
 
                 // Shrink the letter out if it is a red letter
@@ -97,7 +99,11 @@ class PlayState extends Phaser.State {
                 break;
             }
         }
+    }
 
+    isLetterVisible(letter) {
+        return letter.x + config.LETTER_BLOCK_WIDTH > 0 &&
+            letter.x < config.ALG_BAR_WIDTH;
     }
 
     update() {
