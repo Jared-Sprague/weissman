@@ -22,6 +22,8 @@ class PlayState extends Phaser.State {
         this.phraseStr = 'abcde';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
+        this.createSounds();
+
         this.drawScene();
 
         this.addKeyListener();
@@ -83,6 +85,8 @@ class PlayState extends Phaser.State {
 
             if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.compressed) {
                 console.log('matched!', char);
+
+                this.sounds.compress.play();
 
                 // Shrink the letter out if it is a red letter
                 let letterPos = letter.position;
@@ -315,5 +319,14 @@ class PlayState extends Phaser.State {
         group.add(g);
 
         return group;
+    }
+
+
+    createSounds() {
+        this.sounds = {
+            compress: this.game.add.audio('compress'),
+        };
+
+        this.sounds.compress.allowMultiple = true;
     }
 }

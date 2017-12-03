@@ -61,7 +61,7 @@ class PreloadState extends Phaser.State {
         // audio
 
         // this.game.load.audio('MenuMusic', 'sounds/Songs/MainMenu_Track.mp3');
-        // this.game.load.audio('AsteroidHit1'     , 'sounds/Effects/Effect_AsteroidHit1.mp3');
+        this.game.load.audio('compress', 'sounds/fx/compress.wav');
 
     }
 
