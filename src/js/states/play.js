@@ -74,8 +74,6 @@ class PlayState extends Phaser.State {
         if (!this.phrase || this.phrase.length === 0) return;
 
         let char = String.fromCharCode(e.which).toLowerCase();
-        console.log('char [' + char + ']');
-
         let foundMatch = false;
 
         // See if there are any visible uncompressed letters
@@ -274,7 +272,7 @@ class PlayState extends Phaser.State {
         this.currentStage++;
 
         // Draw the speech bubble and save a reference to it
-        let speechBubble = this.drawSpeechBubble('I wonder if Richard Hendricks wrote their algorithm');
+        let speechBubble = this.drawSpeechBubble('man that was the slowest download EVER!');
 
         // schedule event to remove speech bubble
         this.game.time.events.add(3000, () => {
@@ -300,10 +298,22 @@ class PlayState extends Phaser.State {
     }
 
     drawSpeechBubble(text) {
+        let group = this.game.add.group();
+
         // Draw Speech Bubble
         let style = { font: "30px Monospace", fill: "#fff", align: "left", wordWrap: true, wordWrapWidth: 300 };
-        let speechBubble = this.game.add.text(100, 100, text, style);
+        let speechBubble = this.game.add.text(200, 70, text, style);
+        let user = this.sprites.user;
+        let g = this.game.add.graphics(0,0);
 
-        return speechBubble;
+        // Draw the line to the speech bubble
+        g.lineStyle(1, 0xFFFFFF, 1);
+        g.moveTo(user.position.x + user.width - 15, user.position.y + 15);
+        g.lineTo(speechBubble.position.x + speechBubble.width / 2, speechBubble.position.y + speechBubble.height);
+
+        group.add(speechBubble);
+        group.add(g);
+
+        return group;
     }
 }
