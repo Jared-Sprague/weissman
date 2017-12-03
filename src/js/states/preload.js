@@ -54,6 +54,8 @@ class PreloadState extends Phaser.State {
         // Sprite sheets
 
         this.game.load.spritesheet('btn-play', 'images/button-play.png', 320, 120);
+        this.game.load.spritesheet('btn-play-again', 'images/button-play-again.png', 320, 120);
+        this.game.load.spritesheet('btn-next', 'images/button-next.png', 320, 120);
 
 
         // audio

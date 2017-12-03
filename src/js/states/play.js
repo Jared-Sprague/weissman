@@ -313,11 +313,7 @@ class PlayState extends Phaser.State {
                 console.log('[play] destroying speech bubble');
                 speechBubble.destroy();
 
-                if (this.currentStage <= config.NUM_STAGES) {
-                    console.log('[play] starting next stage');
-                    this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
-                    this.drawScoreDialog();
-                }
+                this.drawScoreDialog();
 
             });
         });
@@ -371,22 +367,63 @@ class PlayState extends Phaser.State {
 
         scoreDialogGroup.add(scoreDialogBg);
 
-
-
         // Now draw the main Weissman score in big text
         let style = { font: "60px Monospace", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
         let scoreLabel = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 10, "WEISSMAN SCORE", style);
         scoreLabel.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 10, scoreDialogBg.width, 80);
         scoreDialogGroup.add(scoreLabel);
 
-
+        // Draw the actual score
         style = { font: "bold 70px Monospace", fill: "#000" + config.COMPRESSED_TINT, boundsAlignH: "center", boundsAlignV: "middle" };
         let scoreTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, "3.5", style);
         scoreTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, scoreDialogBg.width, 100);
         scoreTxt.addColor("#38d214", 0);
         scoreDialogGroup.add(scoreTxt);
 
+        function nextStage() {
+            console.log('[play] starting next stage');
+            this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
+            scoreDialogGroup.destroy();
+            this.drawIncomingFile();
+        }
 
-        scoreDialogGroup.position.set(this.world.centerX / 2, this.world.centerY / 2);
+        // Draw the Next file button
+        if (this.currentStage <= config.NUM_STAGES) {
+            // Draw the Next button
+            const nextButton = this.game.add.button(
+                0,
+                scoreDialogBg.position.y + 400,
+                'btn-next',
+                nextStage.bind(this),
+                this,
+                1, // over
+                0, // out
+                2  // down
+            );
+            nextButton.input.useHandCursor = false;
+            nextButton.position.x = (scoreDialogBg.width / 2) - (nextButton.width / 2);
+
+            scoreDialogGroup.add(nextButton);
+        }
+        else {
+            // Play again button
+            const playBtn = this.game.add.button(
+                0,
+                scoreDialogBg.position.y + 400,
+                'btn-play-again',
+                () => { this.game.stateTransition.to('PlayState') },
+                this,
+                1, // over
+                0, // out
+                2  // down
+            );
+            playBtn.input.useHandCursor = false;
+            playBtn.position.x = (scoreDialogBg.width / 2) - (playBtn.width / 2);
+
+            scoreDialogGroup.add(playBtn);
+        }
+
+        scoreDialogGroup.position.set((config.CANVAS_WIDTH / 2) - (scoreDialogBg.width / 2),
+            (config.CANVAS_HEIGHT / 2) - (scoreDialogBg.height / 2));
     }
 }
