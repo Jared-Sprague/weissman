@@ -15,6 +15,11 @@ class PlayState extends Phaser.State {
         this.text = {};
 
         this.currentStage = 1;
+        this.stageFileLabels = {
+            1: 'text/plain',
+            2: 'application/json',
+            3: '3D Video File'
+        };
 
         this.overallScore = this.initScore();
 
@@ -243,17 +248,28 @@ class PlayState extends Phaser.State {
         this.text.fileProgress.setTextBounds(0, 200, config.CANVAS_WIDTH, 80);
     }
 
-    drawIncomingFile(key) {
+    drawIncomingFile() {
         let startPosition = this.sprites.user.position;
         let endPosition   = this.sprites.server.position;
-        let fileSprite    = this.game.add.sprite(startPosition.x, startPosition.y, key);
         let time          = 4000;
         let arcPeakY      = 10;
+        let fileGroup     = this.game.add.group();
+        let fileSprite    = this.game.add.sprite(0, 0, 'file');
+
+        fileGroup.position.set(startPosition.x, startPosition.y);
+        fileGroup.add(fileSprite);
+
+
+        // Draw file label
+        let style = { font: "24px Monospace", fill: "#fff", align: "left"};
+        let fileLabel = this.game.add.text(0, fileSprite.height, this.stageFileLabels[this.currentStage], style);
+        fileLabel.x -= fileLabel.width / 4;
+        fileGroup.add(fileLabel);
 
         this.sounds.fileRequest.play();
 
         // tween the object from left to right in a linear fashion
-        this.game.add.tween(fileSprite.position)
+        this.game.add.tween(fileGroup.position)
             .to({x: endPosition.x},
                 time,
                 Phaser.Easing.Linear.None,
@@ -261,13 +277,14 @@ class PlayState extends Phaser.State {
             );
 
         // chain tween the object up to the Y value with a sinusoidal ease out, then back down with an ease in
-        let fileTween = this.game.add.tween(fileSprite.position)
+        let fileTween = this.game.add.tween(fileGroup.position)
             .to({y: arcPeakY}, time * 0.5, Phaser.Easing.Sinusoidal.Out)
             .to({y: endPosition.y}, time * 0.5, Phaser.Easing.Sinusoidal.In)
             .start();
 
         fileTween.onComplete.add(() => {
             this.beginPhrase(this.phraseStr);
+            fileGroup.destroy();
         }, this)
     }
 
