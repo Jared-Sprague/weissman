@@ -23,8 +23,8 @@ class PlayState extends Phaser.State {
 
         this.overallScore = this.initScore();
 
-        this.phraseStr = 'it is a long established fact that a reader';
-        // this.phraseStr = 'abcde';
+        // this.phraseStr = 'it is a long established fact that a reader';
+        this.phraseStr = 'abcde';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
         this.createSounds();
@@ -89,8 +89,6 @@ class PlayState extends Phaser.State {
             let letterSprite = letter.children[1];
 
             if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.compressed) {
-                console.log('matched!', char);
-
                 this.sounds.compress.play();
 
                 // Shrink the letter out if it is a red letter
@@ -129,8 +127,6 @@ class PlayState extends Phaser.State {
                 let letterSprite = letter.children[1];
 
                 if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.lossed) {
-                    console.log('matched compressed!', char);
-
                     this.sounds.lost.play();
 
                     // Draw the red 'x' sprite over the character
@@ -253,7 +249,7 @@ class PlayState extends Phaser.State {
     drawIncomingFile() {
         let startPosition = this.sprites.user.position;
         let endPosition   = this.sprites.server.position;
-        let time          = 4000;
+        let time          = config.FILE_REQUEST_TIME;
         let arcPeakY      = 10;
         let fileGroup     = this.game.add.group();
         let fileSprite    = this.game.add.sprite(0, 0, 'file');
@@ -306,7 +302,7 @@ class PlayState extends Phaser.State {
         let speechBubble = this.drawSpeechBubble('man that was the slowest download EVER!');
 
         // schedule event to remove speech bubble
-        this.game.time.events.add(3000, () => {
+        this.game.time.events.add(config.SPEECH_BUBBLE_TIME, () => {
             let tween = this.game.add.tween(speechBubble)
                 .to({alpha: 0},
                     500,
@@ -320,7 +316,7 @@ class PlayState extends Phaser.State {
                 if (this.currentStage <= config.NUM_STAGES) {
                     console.log('[play] starting next stage');
                     this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
-                    this.drawIncomingFile('file');
+                    this.drawScoreDialog();
                 }
 
             });
@@ -365,5 +361,32 @@ class PlayState extends Phaser.State {
             this.sounds.typingSong.stop();
             this.sounds.typingSong.volume = 1;
         });
+    }
+
+    drawScoreDialog() {
+        let scoreDialogGroup = this.game.add.group();
+
+        // first draw a rectangle background
+        let scoreDialogBg = this.game.add.sprite(0, 0, 'score-bg');
+
+        scoreDialogGroup.add(scoreDialogBg);
+
+
+
+        // Now draw the main Weissman score in big text
+        let style = { font: "60px Monospace", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
+        let scoreLabel = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 10, "WEISSMAN SCORE", style);
+        scoreLabel.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 10, scoreDialogBg.width, 80);
+        scoreDialogGroup.add(scoreLabel);
+
+
+        style = { font: "bold 70px Monospace", fill: "#000" + config.COMPRESSED_TINT, boundsAlignH: "center", boundsAlignV: "middle" };
+        let scoreTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, "3.5", style);
+        scoreTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, scoreDialogBg.width, 100);
+        scoreTxt.addColor("#38d214", 0);
+        scoreDialogGroup.add(scoreTxt);
+
+
+        scoreDialogGroup.position.set(this.world.centerX / 2, this.world.centerY / 2);
     }
 }
