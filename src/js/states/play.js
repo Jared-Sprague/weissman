@@ -18,22 +18,41 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        this.zoomAlgWindow();
+        this.drawWord('ludum dare is so much fun');
     }
 
     drawScene() {
         // draw user sprite
-        this.sprites.user = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'user');
-
-        // draw wire sprite
-        this.sprites.wire = this.game.add.sprite(config.CANVAS_WIDTH / 2 - 100, config.CANVAS_HEIGHT / 2 + 50, 'wire');
+        this.sprites.user = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'server');
 
         // draw server sprite
-        this.sprites.server = this.game.add.sprite(20, config.CANVAS_HEIGHT / 2 - 100, 'server');
+        this.sprites.server = this.game.add.sprite(20, config.CANVAS_HEIGHT / 2 - 100, 'user');
 
-        // draw algorithm sprite
-        this.sprites.algorithm = this.game.add.sprite(300, config.CANVAS_HEIGHT / 2 + 30, 'algorithm');
-        this.sprites.algorithm.scale.set(0.1, 0.3);
+        // draw algorithm bar
+        this.sprites.algBarSprite = this.game.add.sprite(150, config.CANVAS_HEIGHT / 2, 'algorithm');
+
+        // Alg bar group that will hold the phrase
+        this.algBarGroup = this.game.add.group();
+        this.algBarGroup.x = 150;
+        this.algBarGroup.y = config.CANVAS_HEIGHT / 2;
+
+        // mask on the edges
+        this.drawAlgMask();
+
+    }
+
+    drawAlgMask() {
+        //  A mask is a Graphics object
+        let mask = game.add.graphics(0, 0);
+
+        //  Shapes drawn to the Graphics object must be filled.
+        mask.beginFill(0xffffff, 1);
+
+        //  Here we'll draw a rectangle for each group sprite
+        mask.drawRect(150 + 10, config.CANVAS_HEIGHT / 2, config.ALG_BAR_WIDTH - 20, config.ALG_BAR_HEIGHT);
+
+        //  And apply it to the Group itself
+        this.algBarGroup.mask = mask;
     }
 
     addKeyListener() {
@@ -75,30 +94,11 @@ class PlayState extends Phaser.State {
 
     }
 
-    zoomAlgWindow() {
-
-        this.tweens.zoomAlg = this.game.add.tween(this.sprites.algorithm.scale)
-            .to({x: 1, y: 1},
-                1000,
-                Phaser.Easing.Linear.None,
-                true
-            );
-        this.tweens.zoomAlg.onComplete.add(() => {
-            this.drawWord('ludum dare');
-        }, );
-
-        this.tweens.zoomPosAlg = this.game.add.tween(this.sprites.algorithm.position)
-            .to({x: 150, y: config.CANVAS_HEIGHT / 2 - 200},
-                1000,
-                Phaser.Easing.Linear.None,
-                true
-            );
-    }
 
     drawWord(str) {
         this.word   = this.game.add.group();
-        this.word.x = 175;
-        this.word.y = config.CANVAS_HEIGHT / 2 - 175;
+        this.word.x = config.ALG_BAR_WIDTH + 100;
+        this.word.y = config.LETTER_BLOCK_HEIGHT / 2;
 
         for (let i = 0; i < str.length; i++) {
             let xOffset = i * config.LETTER_BLOCK_WIDTH;
@@ -113,11 +113,11 @@ class PlayState extends Phaser.State {
             this.word.add(letter.group);
         }
 
-        let pixelLength = this.word.children.length * config.LETTER_BLOCK_WIDTH;
+        this.algBarGroup.add(this.word);
 
         this.game.add.tween(this.word)
-            .to({x: 1125 - pixelLength},
-                3000,
+            .to({x: -3000},
+                15000,
                 Phaser.Easing.Linear.None,
                 true
             );

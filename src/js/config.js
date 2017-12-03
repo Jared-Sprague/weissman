@@ -7,4 +7,7 @@ const config = Object.freeze({
     LETTER_BLOCK_WIDTH: 50,
     LETTER_BLOCK_HEIGHT: 50,
 
+    ALG_BAR_WIDTH: 900,
+    ALG_BAR_HEIGHT: 100,
+
 });
