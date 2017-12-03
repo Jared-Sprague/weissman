@@ -173,23 +173,7 @@ class PlayState extends Phaser.State {
                     this.phrase.destroy();
 
                     // handle end phase, perform user reaction and save score
-                    console.log('score', this.phraseScore);
-                    this.addOverallScore(this.phraseScore);
-
-                    if (this.currentStage < config.NUM_STAGES) {
-                        // Advance to next stage
-                        this.currentStage++;
-                        this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
-
-                        // schedule next phrase
-                        this.game.time.events.add(2000, () => {
-                            this.drawIncomingFile('file');
-                        });
-                    }
-                    else {
-                        // Handle game complete and go to score state
-                        console.log('[play] Game Complete!');
-                    }
+                    this.handleEndStage();
 
                     break;
                 }
@@ -247,10 +231,7 @@ class PlayState extends Phaser.State {
     drawFileProgressText() {
         let style = { font: "bold 40px Monospace", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
-        //  The Text is positioned at 0, 100
         this.text.fileProgress = this.game.add.text(0, 0, `File ${this.currentStage} of ${config.NUM_STAGES}`, style);
-
-        //  We'll set the bounds to be from x0, y100 and be 800px wide by 100px high
         this.text.fileProgress.setTextBounds(0, 200, config.CANVAS_WIDTH, 80);
     }
 
@@ -278,5 +259,51 @@ class PlayState extends Phaser.State {
         fileTween.onComplete.add(() => {
             this.beginPhrase(this.phraseStr);
         }, this)
+    }
+
+    handleEndStage() {
+        console.log('[play] Stage complete, score:', this.phraseScore);
+        this.addOverallScore(this.phraseScore);
+
+
+        if (this.currentStage === config.NUM_STAGES) {
+            // Handle game complete and go to score state
+            console.log('[play] Game Complete!');
+        }
+
+        this.currentStage++;
+
+        // Draw the speech bubble and save a reference to it
+        let speechBubble = this.drawSpeechBubble('I wonder if Richard Hendricks wrote their algorithm');
+
+        // schedule event to remove speech bubble
+        this.game.time.events.add(3000, () => {
+            let tween = this.game.add.tween(speechBubble)
+                .to({alpha: 0},
+                    500,
+                    Phaser.Easing.Linear.None,
+                    true
+                );
+            tween.onComplete.add(() => {
+                console.log('[play] destroying speech bubble');
+                speechBubble.destroy();
+
+                if (this.currentStage <= config.NUM_STAGES) {
+                    console.log('[play] starting next stage');
+                    this.text.fileProgress.setText(`File ${this.currentStage} of ${config.NUM_STAGES}`);
+                    this.drawIncomingFile('file');
+                }
+
+            });
+        });
+
+    }
+
+    drawSpeechBubble(text) {
+        // Draw Speech Bubble
+        let style = { font: "30px Monospace", fill: "#fff", align: "left", wordWrap: true, wordWrapWidth: 300 };
+        let speechBubble = this.game.add.text(100, 100, text, style);
+
+        return speechBubble;
     }
 }
