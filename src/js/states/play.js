@@ -245,7 +245,7 @@ class PlayState extends Phaser.State {
         let style = { font: "bold 40px Monospace", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 
         this.text.fileProgress = this.game.add.text(0, 0, `File ${this.currentStage} of ${config.NUM_STAGES}`, style);
-        this.text.fileProgress.setTextBounds(0, 200, config.CANVAS_WIDTH, 80);
+        this.text.fileProgress.setTextBounds(0, this.sprites.algBarSprite.y - 100, config.CANVAS_WIDTH, 80);
     }
 
     drawIncomingFile() {
@@ -262,7 +262,7 @@ class PlayState extends Phaser.State {
 
         // Draw file label
         let style = { font: "24px Monospace", fill: "#fff", align: "left"};
-        let fileLabel = this.game.add.text(0, fileSprite.height, this.stageFileLabels[this.currentStage], style);
+        let fileLabel = this.game.add.text(0, fileSprite.height + 2, `Request: ${this.stageFileLabels[this.currentStage]}`, style);
         fileLabel.x -= fileLabel.width / 4;
         fileGroup.add(fileLabel);
 
