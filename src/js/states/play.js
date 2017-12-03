@@ -18,8 +18,8 @@ class PlayState extends Phaser.State {
 
         this.overallScore = this.initScore();
 
-        // this.phraseStr = 'it is a long established fact that a reader';
-        this.phraseStr = 'abcde';
+        this.phraseStr = 'it is a long established fact that a reader';
+        // this.phraseStr = 'abcde';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
         this.createSounds();
@@ -247,8 +247,10 @@ class PlayState extends Phaser.State {
         let startPosition = this.sprites.user.position;
         let endPosition   = this.sprites.server.position;
         let fileSprite    = this.game.add.sprite(startPosition.x, startPosition.y, key);
-        let time          = 3000;
+        let time          = 4000;
         let arcPeakY      = 10;
+
+        this.sounds.fileRequest.play();
 
         // tween the object from left to right in a linear fashion
         this.game.add.tween(fileSprite.position)
@@ -333,6 +335,7 @@ class PlayState extends Phaser.State {
             compress: this.game.add.audio('compress'),
             lost: this.game.add.audio('lost'),
             typingSong: this.game.add.audio('typingSong'),
+            fileRequest: this.game.add.audio('fileRequest'),
         };
 
         this.sounds.compress.allowMultiple = true;
