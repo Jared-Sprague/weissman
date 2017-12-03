@@ -118,6 +118,9 @@ class PlayState extends Phaser.State {
                 if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.lossed) {
                     console.log('matched compressed!', char);
 
+                    // Draw the red 'x' sprite over the character
+                    letter.create(0, 0, 'lost');
+
                     // Change tint to lost
                     letter.children[0].tint = config.LOST_TINT;
 
