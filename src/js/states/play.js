@@ -396,6 +396,11 @@ class PlayState extends Phaser.State {
         console.log('[play] Show score', this.phraseScore);
         let scoreDialogGroup = this.game.add.group();
         let stats = this.getStats();
+        let flavorStr = "I hear Hooli is hiring..";
+
+        if (+stats.weissman_score === config.PERFECT_SCORE) {
+            flavorStr = "Congratulations! You blew away the theoretical limit!";
+        }
 
         // first draw a rectangle background
         let scoreDialogBg = this.game.add.sprite(0, 0, 'score-bg');
@@ -417,7 +422,7 @@ class PlayState extends Phaser.State {
 
         // Draw the flavor text based on score
         style = { font: "italic 24px Monospace", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
-        let flavorTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 100, "I hear Hooli is hiring..", style);
+        let flavorTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 100, flavorStr, style);
         flavorTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 80, scoreDialogBg.width, 60);
         scoreDialogGroup.add(flavorTxt);
 
@@ -509,10 +514,12 @@ class PlayState extends Phaser.State {
         let weissman_score = config.WEISSMAN_THEORETICAL_LIMIT;
 
         if (score.totalUncompressed === 0 && score.totalLost === 0 && this.currentStage === 4) {
+            console.log('[play] perfect score!');
             weissman_score = config.PERFECT_SCORE;
         }
         else {
             weissman_score -= (weissman_score * uncompressedPct * 1.5) - (weissman_score * lostPct * 1.5);
+            weissman_score = Math.max(0, weissman_score); // don't allow negative
         }
 
         return {
