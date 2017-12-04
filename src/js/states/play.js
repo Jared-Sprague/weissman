@@ -27,6 +27,13 @@ class PlayState extends Phaser.State {
             3: "oh crap a 3d video file the one thing i have trouble compressing oh man I hope this works",
         };
 
+        this.userReactions = {
+            bad: 'JING-YANG!',
+            ok: 'Eh. They must be running Nucleus.',
+            good: 'Wow that was fast! Anton must be flying.',
+            great: 'That was FAST! They must be using Middle Out.'
+        };
+
         this.overallScore = this.initScore();
 
         // this.phraseStr = 'it is a long established fact that a reader';
@@ -310,7 +317,22 @@ class PlayState extends Phaser.State {
         this.phraseSpeed += config.DIFFICULTY_SPEED_INCREMENT;
 
         // Draw the speech bubble and save a reference to it
-        let speechBubble = this.drawSpeechBubble('man that was the slowest download EVER!');
+        let stats = this.getStats();
+        let reaction = this.userReactions.ok;
+        if (stats.weissman_score <= 2.1) {
+            reaction = this.userReactions.bad;
+        }
+        else if (stats.weissman_score > 2.1 && stats.weissman_score <= 2.6) {
+            reaction = this.userReactions.ok;
+        }
+        else if (stats.weissman_score > 2.6 && stats.weissman_score <= 2.8) {
+            reaction = this.userReactions.good;
+        }
+        else if (stats.weissman_score > 2.8) {
+            reaction = this.userReactions.great;
+        }
+
+        let speechBubble = this.drawSpeechBubble(reaction);
 
         // schedule event to remove speech bubble
         this.game.time.events.add(config.SPEECH_BUBBLE_TIME, () => {
@@ -490,7 +512,7 @@ class PlayState extends Phaser.State {
             weissman_score = config.PERFECT_SCORE;
         }
         else {
-            weissman_score -= (weissman_score * uncompressedPct) - (weissman_score * lostPct);
+            weissman_score -= (weissman_score * uncompressedPct * 1.5) - (weissman_score * lostPct * 1.5);
         }
 
         return {
