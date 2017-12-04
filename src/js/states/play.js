@@ -38,17 +38,17 @@ class PlayState extends Phaser.State {
 
     drawScene() {
         // draw user sprite
-        this.sprites.server = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 100, 'server');
+        this.sprites.server = this.game.add.sprite(config.CANVAS_WIDTH - 200, config.CANVAS_HEIGHT / 2 - 70, 'server');
 
         // draw server sprite
         this.sprites.user = this.game.add.sprite(20, config.CANVAS_HEIGHT / 2 - 100, 'user');
 
         // draw algorithm bar
-        this.sprites.algBarSprite = this.game.add.sprite(150, config.CANVAS_HEIGHT / 2, 'algorithm');
+        this.sprites.algBarSprite = this.game.add.sprite(160, config.CANVAS_HEIGHT / 2, 'algorithm');
 
         // Alg bar group that will hold the phrase
         this.algBarGroup = this.game.add.group();
-        this.algBarGroup.x = 150;
+        this.algBarGroup.x = 160;
         this.algBarGroup.y = config.CANVAS_HEIGHT / 2;
 
         // mask on the edges
@@ -66,7 +66,7 @@ class PlayState extends Phaser.State {
         mask.beginFill(0xffffff, 1);
 
         //  Here we'll draw a rectangle for each group sprite
-        mask.drawRect(150 + 10, config.CANVAS_HEIGHT / 2, config.ALG_BAR_WIDTH - 20, config.ALG_BAR_HEIGHT);
+        mask.drawRect(160 + 10, config.CANVAS_HEIGHT / 2, config.ALG_BAR_WIDTH - 20, config.ALG_BAR_HEIGHT);
 
         //  And apply it to the Group itself
         this.algBarGroup.mask = mask;
