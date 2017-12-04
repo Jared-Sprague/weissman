@@ -17,8 +17,14 @@ class PlayState extends Phaser.State {
         this.currentStage = 1;
         this.stageFileLabels = {
             1: 'text/plain',
-            2: 'application/json',
+            2: 'application/xml',
             3: '3D Video File'
+        };
+
+        this.stageTypingText = {
+            1: "ahh a nice simple plain string",
+            2: "who uses xml anymore honestly lets compress this into oblivion",
+            3: "oh crap a 3d video file the one thing i have trouble compressing oh man I hope this works",
         };
 
         this.overallScore = this.initScore();
@@ -284,7 +290,7 @@ class PlayState extends Phaser.State {
             .start();
 
         fileTween.onComplete.add(() => {
-            this.beginPhrase(this.phraseStr);
+            this.beginPhrase(this.stageTypingText[this.currentStage]);
             fileGroup.destroy();
         }, this)
     }
@@ -300,6 +306,8 @@ class PlayState extends Phaser.State {
         }
 
         this.currentStage++;
+
+        this.phraseSpeed += config.DIFFICULTY_SPEED_INCREMENT;
 
         // Draw the speech bubble and save a reference to it
         let speechBubble = this.drawSpeechBubble('man that was the slowest download EVER!');

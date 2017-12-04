@@ -10,7 +10,7 @@ const config = Object.freeze({
     ALG_BAR_WIDTH: 900,
     ALG_BAR_HEIGHT: 100,
 
-    INITIAL_PHRASE_SPEED: 10,
+    INITIAL_PHRASE_SPEED: 2,
 
     UNCOMPRESSED_TINT: 0xff0000,
     COMPRESSED_TINT: 0x384088,
@@ -27,5 +27,7 @@ const config = Object.freeze({
     PERFECT_SCORE: 5.2,
 
     WEISSMAN_THEORETICAL_LIMIT: 2.9,
+
+    DIFFICULTY_SPEED_INCREMENT: 1.3,
 
 });
