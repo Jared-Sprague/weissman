@@ -19,6 +19,9 @@ class PreloadState extends Phaser.State {
         this.game.load.image('letter-bg', 'images/letter-bg.png');
         this.game.load.image('lost', 'images/lost.png');
         this.game.load.image('score-bg', 'images/score-dialog-bg.png');
+        this.game.load.image('compressed-bar', 'images/compressed-bar.png');
+        this.game.load.image('uncompressed-bar', 'images/uncompressed-bar.png');
+        this.game.load.image('lost-bar', 'images/lost-bar.png');
 
         // letters
         this.game.load.image('a', 'images/letters/a.png');

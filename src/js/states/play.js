@@ -24,7 +24,7 @@ class PlayState extends Phaser.State {
         this.overallScore = this.initScore();
 
         // this.phraseStr = 'it is a long established fact that a reader';
-        this.phraseStr = 'abcde';
+        this.phraseStr = 'abcdefghij';
         this.phraseSpeed = config.INITIAL_PHRASE_SPEED;
 
         this.createSounds();
@@ -287,7 +287,7 @@ class PlayState extends Phaser.State {
     }
 
     handleEndStage() {
-        console.log('[play] Stage complete, score:', this.phraseScore);
+        console.log('[play] Stage complete');
         this.addOverallScore(this.phraseScore);
 
 
@@ -360,7 +360,9 @@ class PlayState extends Phaser.State {
     }
 
     drawScoreDialog() {
+        console.log('[play] Show score', this.phraseScore);
         let scoreDialogGroup = this.game.add.group();
+        let stats = this.getStats();
 
         // first draw a rectangle background
         let scoreDialogBg = this.game.add.sprite(0, 0, 'score-bg');
@@ -374,11 +376,49 @@ class PlayState extends Phaser.State {
         scoreDialogGroup.add(scoreLabel);
 
         // Draw the actual score
-        style = { font: "bold 70px Monospace", fill: "#000" + config.COMPRESSED_TINT, boundsAlignH: "center", boundsAlignV: "middle" };
-        let scoreTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, "3.5", style);
-        scoreTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 55, scoreDialogBg.width, 100);
+        style = { font: "bold 70px Monospace", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
+        let scoreTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 45, stats.weissman_score, style);
+        scoreTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 45, scoreDialogBg.width, 100);
         scoreTxt.addColor("#38d214", 0);
         scoreDialogGroup.add(scoreTxt);
+
+        // Draw the flavor text based on score
+        style = { font: "italic 24px Monospace", fill: "#000", boundsAlignH: "center", boundsAlignV: "middle" };
+        let flavorTxt = this.game.add.text(scoreDialogBg.position.x, scoreDialogBg.position.y + 100, "I hear Hooli is hiring..", style);
+        flavorTxt.setTextBounds(scoreDialogBg.position.x, scoreDialogBg.position.y + 80, scoreDialogBg.width, 60);
+        scoreDialogGroup.add(flavorTxt);
+
+        // Draw the stats bars
+        let statBarsGroup = this.game.add.group();
+        let compressedBarSprite = this.game.add.sprite(150, 0, 'compressed-bar');
+        compressedBarSprite.width = stats.compressedWidth;
+        let uncompressedBarSprite = this.game.add.sprite(150, 40, 'uncompressed-bar');
+        uncompressedBarSprite.width = stats.uncompressedWidth;
+        let lostBarSprite = this.game.add.sprite(150, 80, 'lost-bar');
+        lostBarSprite.width = stats.lostWidth;
+
+        statBarsGroup.add(compressedBarSprite);
+        statBarsGroup.add(uncompressedBarSprite);
+        statBarsGroup.add(lostBarSprite);
+
+        // Add the text labels for the stat bars
+        style = { font: "italic 20px Monospace", fill: "#000", boundsAlignH: "right", boundsAlignV: "top" };
+        let compressedLabel = this.game.add.text(0, 0, `Compressed ${stats.compressedPct}%`, style);
+        compressedLabel.setTextBounds(0, 0, 140, 40);
+        style = { font: "italic 20px Monospace", fill: "#000", boundsAlignH: "right", boundsAlignV: "top" };
+        let uncompressedLabel = this.game.add.text(0, 40, `Uncompressed ${stats.uncompressedPct}%`, style);
+        uncompressedLabel.setTextBounds(0, 0, 140, 40);
+        style = { font: "italic 20px Monospace", fill: "#000", boundsAlignH: "right", boundsAlignV: "top" };
+        let lostLabel = this.game.add.text(0, 80, `Lost ${stats.lostPct}%`, style);
+        lostLabel.setTextBounds(0, 0, 140, 40);
+
+        statBarsGroup.add(compressedLabel);
+        statBarsGroup.add(uncompressedLabel);
+        statBarsGroup.add(lostLabel);
+
+        statBarsGroup.position.set(100, 250);
+
+        scoreDialogGroup.add(statBarsGroup);
 
         function nextStage() {
             console.log('[play] starting next stage');
@@ -425,5 +465,31 @@ class PlayState extends Phaser.State {
 
         scoreDialogGroup.position.set((config.CANVAS_WIDTH / 2) - (scoreDialogBg.width / 2),
             (config.CANVAS_HEIGHT / 2) - (scoreDialogBg.height / 2));
+    }
+
+    getStats() {
+        let score = this.phraseScore;
+        const compressedPct = score.totalCompressed / score.numChars;
+        const uncompressedPct = score.totalUncompressed / score.numChars;
+        const lostPct = score.totalLost / score.numChars;
+
+        let weissman_score = config.WEISSMAN_THEORETICAL_LIMIT;
+
+        if (score.totalUncompressed === 0 && score.totalLost === 0) {
+            weissman_score = config.PERFECT_SCORE;
+        }
+        else {
+            weissman_score -= (weissman_score * uncompressedPct) - (weissman_score * lostPct);
+        }
+
+        return {
+            weissman_score: weissman_score.toFixed(2),
+            compressedWidth: config.STATS_BAR_WIDTH * compressedPct,
+            uncompressedWidth: config.STATS_BAR_WIDTH * uncompressedPct,
+            lostWidth: config.STATS_BAR_WIDTH * lostPct,
+            compressedPct: Math.round(compressedPct * 100),
+            uncompressedPct: Math.round(uncompressedPct * 100),
+            lostPct: Math.round(lostPct * 100),
+        }
     }
 }
