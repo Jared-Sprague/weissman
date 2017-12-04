@@ -33,7 +33,10 @@ class PlayState extends Phaser.State {
 
         this.addKeyListener();
 
-        this.drawIncomingFile('file');
+        this.game.time.events.add(500, () => {
+            this.drawIncomingFile('file');
+        });
+
     }
 
     drawScene() {
