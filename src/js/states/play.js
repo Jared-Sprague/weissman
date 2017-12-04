@@ -475,7 +475,7 @@ class PlayState extends Phaser.State {
 
         let weissman_score = config.WEISSMAN_THEORETICAL_LIMIT;
 
-        if (score.totalUncompressed === 0 && score.totalLost === 0) {
+        if (score.totalUncompressed === 0 && score.totalLost === 0 && this.currentStage === 4) {
             weissman_score = config.PERFECT_SCORE;
         }
         else {
