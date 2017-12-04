@@ -24,7 +24,7 @@ class PlayState extends Phaser.State {
         this.stageTypingText = {
             1: "ahh a nice simple plain string",
             2: "who uses xml anymore honestly lets compress this into oblivion",
-            3: "oh crap a 3d video file the one thing i have trouble compressing oh man I hope this works",
+            3: "oh crap a 3d video file the one thing i have trouble compressing oh man i hope this works",
         };
 
         this.userReactions = {
@@ -104,7 +104,7 @@ class PlayState extends Phaser.State {
             let letter       = this.uncompressedLetters[i];
             let letterSprite = letter.children[1];
 
-            if (this.isLetterVisible(letter) && char === letterSprite.key && !letterSprite.data.compressed) {
+            if (this.isLetterVisible(letter) && letterSprite && char === letterSprite.key && !letterSprite.data.compressed) {
                 this.sounds.compress.play();
 
                 // Shrink the letter out if it is a red letter
